@@ -1,8 +1,13 @@
-import { useState } from "react";
+import React,{useState,useRef} from "react";
 import "./CrearU.css";
+import { db } from '../firebaseConfig';
+import { addDoc, collection } from "firebase/firestore";
+
 
 const CrearE = (params) => {
-
+    const EmpRef = useRef();
+    
+    const ref = collection(db,"Empresas");
     const { addEmpresa, busEmpr } = params
     const [tituloA, setTituloA] = useState("Empresa agregada!")
     const [alerta, setAlerta] = useState(false)
@@ -15,17 +20,21 @@ const CrearE = (params) => {
         fecha_creacion: ""
     })
 
-    const handleChange = ({ target }) => {
-        setEmpresa({ ...Empresa, [target.name]: target.value })
+    const handleChange = (event) => {
+        const{name,value}=event.target;
+        setEmpresa({ ...Empresa,  [name]:value })
     }
 
-    const addEmpr = (e) => {
+    const addEmpr = async(e) => {
         e.preventDefault();
+        console.log(EmpRef.current.value)
         const encontrado = busEmpr(Empresa.cif)
         if (encontrado) {
             setTituloA("Ya existe una Empresa con el mismo CIF!")
         } else {
             setTituloA("Empresa agregada!")
+            try{
+                await addDoc(ref,Empresa);
             addEmpresa(Empresa)
             setEmpresa({
                 cif: "",
@@ -34,7 +43,10 @@ const CrearE = (params) => {
                 telefono: "",
                 direccion: "",
                 fecha_creacion: ""
-            })
+            });
+        }catch(error){
+            console.log(error);
+        }
         }
         setAlerta(true)
     }
@@ -47,22 +59,22 @@ const CrearE = (params) => {
             <h4>DATOS BASICOS</h4>
             <form className=" shadow rounded p-3 formBackground" onSubmit={addEmpr}>
                 <h5 >Cif</h5>
-                <input className="form-control" type="text" name="cif" placeholder="Cif" value={Empresa.cif} onChange={handleChange} required />
+                <input className="form-control" type="text" name="cif" placeholder="Cif" value={Empresa.cif} onChange={handleChange} ref={EmpRef} required />
                 <br />
                 <h5 >Nombre</h5>
-                <input className="form-control" type="text" name="nombre" placeholder="Nombre" value={Empresa.nombre} onChange={handleChange} required />
+                <input className="form-control" type="text" name="nombre" placeholder="Nombre" value={Empresa.nombre} onChange={handleChange} ref={EmpRef} required />
                 <br />
                 <h5 >Correo</h5>
-                <input className="form-control" type="email" name="correo" placeholder="Correo" value={Empresa.correo} onChange={handleChange} required />
+                <input className="form-control" type="email" name="correo" placeholder="Correo" value={Empresa.correo} onChange={handleChange} ref={EmpRef} required />
                 <br />
                 <h5 >Telefono</h5>
-                <input className="form-control" type="tel" name="telefono" placeholder="Telefono" value={Empresa.telefono} onChange={handleChange} required />
+                <input className="form-control" type="tel" name="telefono" placeholder="Telefono" value={Empresa.telefono} onChange={handleChange} ref={EmpRef} required />
                 <br />
                 <h5 >Direccion</h5>
-                <input className="form-control" type="text" name="direccion" placeholder="Direccion" value={Empresa.direccion} onChange={handleChange} required />
+                <input className="form-control" type="text" name="direccion" placeholder="Direccion" value={Empresa.direccion} onChange={handleChange} ref={EmpRef} required />
                 <br />
                 <h5 >Fecha de Creacion</h5>
-                <input className="form-control" type="date" name="fecha_creacion" placeholder="Fecha de Creacion" value={Empresa.fecha_creacion} onChange={handleChange} required />
+                <input className="form-control" type="date" name="fecha_creacion" placeholder="Fecha de Creacion" value={Empresa.fecha_creacion} onChange={handleChange} ref={EmpRef} required />
                 <br />
                 <input className="btn btn-primary" type="submit" value="Crear" />
                 {

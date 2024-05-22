@@ -1,7 +1,11 @@
-import { useState } from "react";
+import React,{useState,useRef} from "react";
 import { useParams } from "react-router-dom";
+import { db } from '../firebaseConfig';
+import { addDoc, collection } from "firebase/firestore";
 
 const SoliEmpleo = (params) => {
+    const SolEmRef = useRef();
+    const ref = collection(db,"Solicitudes");
     const { puestos, buscarSolici,adsolicitud,actualizarSolicitud } = params
     const { idSolici, nombreSolici } = useParams()
 

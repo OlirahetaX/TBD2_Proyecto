@@ -7,7 +7,7 @@ import { useState } from 'react';
 import "./BuscarU.css";
 import {Link} from "react-router-dom";
 import { Button } from "react-bootstrap";
-
+import { doc, deleteDoc } from "firebase/firestore";
 
 
 const BuscarU = (params) => {

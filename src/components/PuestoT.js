@@ -1,7 +1,12 @@
-import { useState } from "react";
+import React,{useState,useRef} from "react";
 import { useParams } from "react-router-dom";
+import { db } from '../firebaseConfig';
+import { addDoc, collection } from "firebase/firestore";
 
 const PuestoT = (params) => {
+    const PuestoRef = useRef();
+    const ref = collection(db,"Puestos");
+
     const { addPuesto } = params
     const { cifEmpresa, nombreEmpresa } = useParams()
     const [alerta, setalerta] = useState(false)
@@ -16,12 +21,17 @@ const PuestoT = (params) => {
         tipo_contrato: "",
     })
 
-    const handleChange = ({ target }) => {
-        setPuestoTrabajo({ ...puestoTrabajo, [target.name]: target.value })
+    const handleChange = (event) => {
+        const{name,value}=event.target;
+        setPuestoTrabajo({ ...puestoTrabajo,[name]:value })
     }
 
-    const addPuestoT = (e) => {
+    const addPuestoT = async(e) => {
         e.preventDefault();
+        console.log(PuestoRef.current.value)
+        try{
+            await addDoc(ref,puestoTrabajo);
+
         addPuesto(puestoTrabajo)
         setPuestoTrabajo({
             id_puesto: Date.now,
@@ -32,7 +42,10 @@ const PuestoT = (params) => {
             lugar_empleo: "",
             sueldo: "",
             tipo_contrato: "",
-        })
+        });
+    }catch(error){
+        console.log(error);
+    }
         setalerta(true)
     }
 
@@ -44,19 +57,19 @@ const PuestoT = (params) => {
 
             <form className=" shadow rounded p-3 " onSubmit={addPuestoT}>
                 <h5 >Tipo de Puesto</h5>
-                <input className="form-control" type="text" name="tipo_puesto" placeholder="Tipo de Puesto" value={puestoTrabajo.tipo_puesto} onChange={handleChange} required />
+                <input className="form-control" type="text" name="tipo_puesto" placeholder="Tipo de Puesto" value={puestoTrabajo.tipo_puesto} onChange={handleChange} ref={PuestoRef} required />
                 <br />
                 <h5 >Descripción</h5>
-                <input className="form-control" type="text" name="descripcion" placeholder="Descripcion" value={puestoTrabajo.descripcion} onChange={handleChange} required />
+                <input className="form-control" type="text" name="descripcion" placeholder="Descripcion" value={puestoTrabajo.descripcion} onChange={handleChange} ref={PuestoRef} required />
                 <br />
                 <h5 >Lugar de Empleo</h5>
-                <input className="form-control" type="text" name="lugar_empleo" placeholder="Lugar de Empleo" value={puestoTrabajo.lugar_empleo} onChange={handleChange} required />
+                <input className="form-control" type="text" name="lugar_empleo" placeholder="Lugar de Empleo" value={puestoTrabajo.lugar_empleo} onChange={handleChange} ref={PuestoRef} required />
                 <br />
                 <h5 >Sueldo</h5>
-                <input className="form-control" type="number" name="sueldo" placeholder="Sueldo" value={puestoTrabajo.sueldo} onChange={handleChange} required />
+                <input className="form-control" type="number" name="sueldo" placeholder="Sueldo" value={puestoTrabajo.sueldo} onChange={handleChange} ref={PuestoRef} required />
                 <br />
                 <h5 >Tipo de Contrato</h5>
-                <select id="tipo_contrato" name="tipo_contrato" value={puestoTrabajo.tipo_contrato} onChange={handleChange} required>
+                <select id="tipo_contrato" name="tipo_contrato" value={puestoTrabajo.tipo_contrato} onChange={handleChange} ref={PuestoRef} required>
                     <option value="">Seleccione...</option>
                     <option value="Tiempo completo">Tiempo completo</option>
                     <option value="Tiempo parcial">Tiempo parcial</option>
