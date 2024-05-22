@@ -7,7 +7,7 @@ import { useState } from 'react';
 import "./BuscarU.css";
 import {Link} from "react-router-dom";
 import { Button } from "react-bootstrap";
-import { doc, deleteDoc } from "firebase/firestore";
+
 
 
 const BuscarU = (params) => {
@@ -28,9 +28,11 @@ const BuscarU = (params) => {
     };
 
     const eliminar = () => {
-        elimSoli(usuario.dni)
-        setMostrarAlertaElim(true)
-        setMostrarTabla(false)
+        if (usuario) {
+            elimSoli(usuario.id);
+            setMostrarAlertaElim(true);
+            setMostrarTabla(false);
+        }
     };
 
     const handleButtonClick = () => {

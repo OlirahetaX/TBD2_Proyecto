@@ -13,12 +13,13 @@ import PuestoT from './components/PuestoT';
 import SoliEmpleo from './components/SoliEmpleo';
 import EmprEmpleo from './components/EmprEmpleo';
 import EditarE from './components/EditarE';
-import { collection, getDocs,doc, deleteDoc } from 'firebase/firestore';
+import { collection, addDoc, getDocs,doc, deleteDoc } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 
 
 function App() {
-
+  const EmpleoRef = useRef();
+  const ref = collection(db,"Solicitudes");
 const [solicitantes, setSolicitantes] = useState([]);
 const [Empresas, setEmpresas] = useState([]);
 const [Puestos, setPuestos] = useState([]);
@@ -29,22 +30,19 @@ const [Solicitudes, setSolicitudes] = useState([]);
         try {
             // Fetch data for Solicitantes
             const solicitantesQuerySnapshot = await getDocs(collection(db, 'Solicitantes'));
-            const solicitantesData = solicitantesQuerySnapshot.docs.map(doc => doc.data());
+            const solicitantesData = solicitantesQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             setSolicitantes(solicitantesData);
-
-            // Fetch data for Empresas
+      
             const empresasQuerySnapshot = await getDocs(collection(db, 'Empresas'));
-            const empresasData = empresasQuerySnapshot.docs.map(doc => doc.data());
+            const empresasData = empresasQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             setEmpresas(empresasData);
-
-            // Fetch data for Puestos
+      
             const puestosQuerySnapshot = await getDocs(collection(db, 'Puestos'));
-            const puestosData = puestosQuerySnapshot.docs.map(doc => doc.data());
+            const puestosData = puestosQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             setPuestos(puestosData);
-
-            // Fetch data for Solicitudes
+      
             const solicitudesQuerySnapshot = await getDocs(collection(db, 'Solicitudes'));
-            const solicitudesData = solicitudesQuerySnapshot.docs.map(doc => doc.data());
+            const solicitudesData = solicitudesQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
             setSolicitudes(solicitudesData);
 
             // Do something with the fetched data
@@ -72,11 +70,17 @@ const [Solicitudes, setSolicitudes] = useState([]);
       solicitantes.find(solicitante => solicitante.dni === dni)
     )
   }
-  const elimSolicitante = async(id) => {
+  const elimSolicitante = async (id) => {
+    console.log(`Attempting to delete solicitante with ID: ${id}`);
     try {
       const solicitanteDocRef = doc(db, "Solicitantes", id);
+      console.log(`Document reference created: ${solicitanteDocRef.path}`);
       await deleteDoc(solicitanteDocRef);
-      setSolicitantes(solicitantes.filter(solicitante => solicitante.dni !== id));
+      console.log(`Document with ID ${id} deleted from Firestore.`);
+      
+      // Update the state to remove the deleted solicitante
+      setSolicitantes(prevSolicitantes => prevSolicitantes.filter(solicitante => solicitante.id !== id));
+      console.log(`Solicitante con ID ${id} eliminado correctamente.`);
     } catch (error) {
       console.error("Error deleting solicitante: ", error);
     }
@@ -96,11 +100,12 @@ const [Solicitudes, setSolicitudes] = useState([]);
       Empresas.find(Empresa => Empresa.cif === cif)
     )
   }
-  const elimEmpresa = async(cif) => {
+  const elimEmpresa = async(id) => {
     try {
-      const empresaDocRef = doc(db, "Empresas", cif);
+      const empresaDocRef = doc(db, "Empresas", id);
       await deleteDoc(empresaDocRef);
-      setEmpresas(Empresas.filter(empresa => empresa.cif !== cif));
+      setEmpresas(prevEmpresas => prevEmpresas.filter(empresa => empresa.id !== id));
+      console.log(`Empresa con ID ${id} eliminada correctamente.`);
     } catch (error) {
       console.error("Error deleting empresa: ", error);
     }

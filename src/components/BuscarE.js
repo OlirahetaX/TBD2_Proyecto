@@ -29,9 +29,11 @@ const BuscarE = (params) => {
     };
 
     const eliminar = () => {
-        elimEmpr(Empresa.cif)
-        setMostrarAlertaElim(true)
-        setMostrarTabla(false)
+        if (Empresa) {
+            elimEmpr(Empresa.id); 
+            setMostrarAlertaElim(true);
+            setMostrarTabla(false);
+          }
     };
 
     const handleButtonClick = () => {
