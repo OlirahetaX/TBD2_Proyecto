@@ -26,6 +26,9 @@ const EditarU = (params) => {
         estadoC: "",
         antecedentes: "",
         servicioM: "",
+        requisitos: "",
+        salario: "",
+        contrato: ""
     })
 
     const handleChange = ({ target }) => {
@@ -68,6 +71,9 @@ const EditarU = (params) => {
             estadoC: "",
             antecedentes: "",
             servicioM: "",
+            requisitos: "",
+            salario: "",
+            contrato: ""
         })
     }
 
@@ -181,6 +187,24 @@ const EditarU = (params) => {
                             <br />
                         </div>
                     </div>
+                </div> <br />
+                <div className=" shadow rounded p-3">
+                    <h4>Requistos De Empleo</h4>
+                    <h5 >Tipo de contrato</h5>
+                    <select name="contrato" value={solicitante.contrato} onChange={handleChange} required>
+                        <option value="">Seleccione...</option>
+                        <option value="Tiempo completo">Tiempo completo</option>
+                        <option value="Tiempo parcial">Tiempo parcial</option>
+                        <option value="Temporal">Temporal</option>
+                        <option value="Por proyecto">Por proyecto</option>
+                    </select>
+                    <br />
+                    <h5 >Requisitos</h5>
+                    <input className="form-control" type="text" name="requisitos" placeholder="Requisitos Adicionales" value={solicitante.requisitos} onChange={handleChange} required />
+                    <br />
+                    <h5 >Salario</h5>
+                    <input className="form-control" type="number" name="servicioM" placeholder="Salario Esperado" value={solicitante.salario} onChange={handleChange} required />
+                    <br />
                 </div>
                 <br /><br />
                 <input className="btn btn-primary shadow" type="submit" value="Guardar" style={{ paddingRight: "200px", paddingLeft: "200px" }} />

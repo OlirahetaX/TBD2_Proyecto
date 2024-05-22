@@ -1,3 +1,7 @@
+import CollapseEmpr from "./collapseEmpr/CollapseEmpr"
+import CollapsePuesto from "./collapsePuesto/CollapsePuesto"
+import CollapseSolici from "./collapseSolici/CollapseSolici"
+
 const Home = (params) => {
 
     const { solicitantes, empresas, puestos, solicitudes } = params
@@ -10,19 +14,17 @@ const Home = (params) => {
             <div className=" w-100" style={{ display: "flex", justifyContent: "space-between" }}>
 
                 <div className="shadow rounded p-3 formBackground" style={{ flex: "1 1 50%", maxWidth: "50%", margin: "0 5px" }}>
-                    <h5 style={{ textAlign: "center" }}>Solicitantes</h5>
-                    <table class="table table-borderless" >
+
+                    <table class="table " >
                         <thead>
                             <tr>
-                                <th >DNI</th>
-                                <th>Nombre</th>
+                                <td><h5 style={{ textAlign: "center" }}>Solicitantes</h5></td>
                             </tr>
                         </thead>
                         <tbody>
                             {solicitantes.map((elemento, index) => (
                                 <tr key={index}>
-                                    <td >{elemento.dni}</td>
-                                    <td >{elemento.nombre}</td>
+                                    <td ><CollapseSolici solicitante={elemento} /></td>
                                 </tr>
                             ))}
                         </tbody>
@@ -30,41 +32,35 @@ const Home = (params) => {
                 </div>
 
                 <div className="shadow rounded p-3 formBackground" style={{ flex: "1 1 50%", maxWidth: "50%", margin: "0 5px" }}>
-                    <h5 style={{ textAlign: "center" }}>Empresas</h5>
-                    <table class="table table-borderless">
+                    <table class="table " >
                         <thead>
                             <tr>
-                                <th >CIF</th>
-                                <th >Nombre</th>
+                                <td><h5 style={{ textAlign: "center" }}>Empresas</h5></td>
                             </tr>
                         </thead>
                         <tbody>
                             {empresas.map((elemento, index) => (
                                 <tr key={index}>
-                                    <td >{elemento.cif}</td>
-                                    <td >{elemento.nombre}</td>
+                                    <td ><CollapseEmpr empresa={elemento} /></td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             </div>
-            <br/>
+            <br />
             <div className=" w-100" style={{ display: "flex", justifyContent: "space-between" }}>
                 <div className="shadow rounded p-3 formBackground" style={{ flex: "1 1 50%", maxWidth: "50%", margin: "0 5px" }}>
-                    <h5 style={{ textAlign: "center" }}>Puestos de Trabajo</h5>
-                    <table class="table table-borderless">
+                    <table class="table " >
                         <thead>
                             <tr>
-                                <th >Empresa</th>
-                                <th >Tipo de Puesto</th>
+                                <td><h5 style={{ textAlign: "center" }}>Puestos de Trabajo</h5></td>
                             </tr>
                         </thead>
                         <tbody>
                             {puestos.map((elemento, index) => (
                                 <tr key={index}>
-                                    <td>{elemento.nombre_empresa}</td>
-                                    <td >{elemento.tipo_puesto}</td>
+                                    <td ><CollapsePuesto puesto={elemento} /></td>
                                 </tr>
                             ))}
                         </tbody>
@@ -85,7 +81,7 @@ const Home = (params) => {
                             </tr>
                         </thead>
                         <tbody>
-                        {solicitudes.map((elemento, index) => (
+                            {solicitudes.map((elemento, index) => (
                                 <tr key={index}>
                                     <td>{elemento.idEmp}</td>
                                     <td >{elemento.idSolicitante}</td>

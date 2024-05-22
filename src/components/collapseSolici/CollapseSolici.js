@@ -86,6 +86,18 @@ const CollapseSolici = (params) => {
                         <div className="col-md-4">Servicio Militar:</div>
                         <div className="col-md-8">{solicitante.servicioM}</div>
                     </div>
+                    <div className="row">
+                        <div className="col-md-4">Requisitos Adicionales:</div>
+                        <div className="col-md-8">{solicitante.requisitos}</div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md-4">Salario Esperado:</div>
+                        <div className="col-md-8">{solicitante.salario}</div>
+                    </div>
+                    <div className="row">
+                        <div className="col-md-4">Tipo de Contrato:</div>
+                        <div className="col-md-8">{solicitante.contrato}</div>
+                    </div>
                 </div>
             </div>
 

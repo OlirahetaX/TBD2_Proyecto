@@ -26,7 +26,10 @@ const CrearU = (params) => {
         estadoC: "",
         antecedentes: "",
         servicioM: "",
-                solicitud: false
+        solicitud: false,
+        requisitos: "",
+        salario: "",
+        contrato: ""
     })
 
 
@@ -62,7 +65,10 @@ const CrearU = (params) => {
                 estadoC: "",
                 antecedentes: "",
                 servicioM: "",
-                solicitud: false
+                solicitud: false,
+                requisitos: "",
+                salario: "",
+                contrato: ""
             })
         }
         setAlerta(true)
@@ -166,13 +172,32 @@ const CrearU = (params) => {
                             <br />
                             <h5 >servicio militar</h5>
                             <input className="form-control" type="text" name="servicioM" placeholder="Servicio Militar" value={solicitante.servicioM} onChange={handleChange} required />
-                            <br />
+                            <br /><br />
                         </div>
                     </div>
+                </div> <br/>
+                <div className=" shadow rounded p-3">
+                    <h4>Requistos De Empleo</h4>
+                    <h5 >Tipo de contrato</h5>
+                    <select name="contrato" value={solicitante.contrato} onChange={handleChange} required>
+                        <option value="">Seleccione...</option>
+                        <option value="Tiempo completo">Tiempo completo</option>
+                        <option value="Tiempo parcial">Tiempo parcial</option>
+                        <option value="Temporal">Temporal</option>
+                        <option value="Por proyecto">Por proyecto</option>
+                    </select>
+                    <br />
+                    <h5 >Requisitos</h5>
+                    <input className="form-control" type="text" name="requisitos" placeholder="Requisitos Adicionales" value={solicitante.requisitos} onChange={handleChange} required />
+                    <br />
+                    <h5 >Salario</h5>
+                    <input className="form-control" type="number" name="salario" placeholder="Salario Esperado" value={solicitante.salario} onChange={handleChange} required />
+                    <br />
                 </div>
+
                 <br /><br />
                 <input className="btn btn-primary shadow" type="submit" value="Crear" style={{ paddingRight: "200px", paddingLeft: "200px" }} />
-                
+
             </form>
 
             {

@@ -36,7 +36,10 @@ function App() {
       estadoC: "Divorciado/a",
       antecedentes: "No",
       servicioM: "No",
-      solicitud: false
+      solicitud: false,
+      requisitos: "Buen ambiente laboral",
+      salario: "24500",
+      contrato: "Tiempo parcial"
     }
   ]);
   const [Empresas, setEmpresas] = useState([
