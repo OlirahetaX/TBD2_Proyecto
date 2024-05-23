@@ -5,17 +5,13 @@ const CollapsePuesto = (params) => {
     return (
         <>
             <button class="list-group-item list-group-item-action" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse-${puesto.id_puesto}`} aria-expanded="false" aria-controls="collapseExample">
-                ({puesto.tipo_puesto}) {puesto.nombre_empresa}
+                {puesto.tipo_puesto}
             </button>
             <div class="collapse" id={`collapse-${puesto.id_puesto}`}>
                 <div className='container text-start'>
                     <div className="row">
                         <div className="col-md-4">CIF Empresa:</div>
                         <div className="col-md-8">{puesto.id_empresa}</div>
-                    </div>
-                    <div className="row">
-                        <div className="col-md-4">Empresa:</div>
-                        <div className="col-md-8">{puesto.nombre_empresa}</div>
                     </div>
                     <div className="row">
                         <div className="col-md-4">Tipo De Puesto:</div>

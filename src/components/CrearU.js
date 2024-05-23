@@ -1,11 +1,13 @@
-import React,{useState,useRef} from "react";
+import React, { useState, useRef } from "react";
 import "./CrearU.css";
 import { db } from '../firebaseConfig';
 import { addDoc, collection } from "firebase/firestore";
 
 const CrearU = (params) => {
+    //cambiar a app.js 
+
     const SolicRef = useRef();
-    const ref = collection(db,"Solicitantes");
+    const ref = collection(db, "Solicitantes");
 
     const { addSoli, busSoli } = params
     const [alerta, setAlerta] = useState(false)
@@ -15,7 +17,7 @@ const CrearU = (params) => {
         nombre: "",
         apellido: "",
         fechaNac: "",
-        genero: "",
+        genero: "Maculino",
         direccion: "",
         celular: "",
         correo: "",
@@ -27,7 +29,7 @@ const CrearU = (params) => {
         institucion: "",
         especialidad: "",
         indice: "",
-        estadoC: "",
+        estadoC: "Soltero/a",
         antecedentes: "",
         servicioM: "",
         solicitud: false,
@@ -38,29 +40,26 @@ const CrearU = (params) => {
 
 
     const handleChange = (event) => {
-        const{name,value}=event.target;
-        setSolicitante({ ...solicitante, [name]:value })
-        
+        const { name, value } = event.target;
+        setSolicitante({ ...solicitante, [name]: value })
+
     }
 
 
-    const addSolici = async(e) => {
+    const addSolici = async (e) => {
         e.preventDefault();
-        console.log(SolicRef.current.value)
-        const encontrado = busSoli(solicitante.dni)
-        if (encontrado) {
+        const encontrado = await busSoli(solicitante.dni)
+        if (encontrado!=null) {
             setTituloA("Ya existe un solicitante con el mismo DNI!")
         } else {
             setTituloA("Solicitante agregado!")
-            try{
-                await addDoc(ref,solicitante);
             addSoli(solicitante)
             setSolicitante({
                 dni: '',
                 nombre: "",
                 apellido: "",
                 fechaNac: "",
-                genero: "",
+                genero: "Maculino",
                 direccion: "",
                 celular: "",
                 correo: "",
@@ -72,7 +71,7 @@ const CrearU = (params) => {
                 institucion: "",
                 especialidad: "",
                 indice: "",
-                estadoC: "",
+                estadoC: "Soltero/a",
                 antecedentes: "",
                 servicioM: "",
                 solicitud: false,
@@ -80,12 +79,7 @@ const CrearU = (params) => {
                 salario: "",
                 contrato: ""
             });
-            
-        }catch(error){
-            console.log(error);
-
         }
-    }
         setAlerta(true)
     }
 
@@ -110,7 +104,7 @@ const CrearU = (params) => {
                             <input className="form-control" type="text" name="nombre" placeholder="Nombre" value={solicitante.nombre} onChange={handleChange} ref={SolicRef} required />
                             <br />
                             <h5 >Apellido*</h5>
-                            <input className="form-control" type="text" name="apellido" placeholder="Apellido" value={solicitante.apellido} onChange={handleChange}ref={SolicRef} required />
+                            <input className="form-control" type="text" name="apellido" placeholder="Apellido" value={solicitante.apellido} onChange={handleChange} ref={SolicRef} required />
                             <br />
                             <h5 >Celular*</h5>
                             <input className="form-control" type="text" name="celular" placeholder="Celular" value={solicitante.celular} onChange={handleChange} ref={SolicRef} required />
@@ -135,7 +129,7 @@ const CrearU = (params) => {
                                 </div>
                                 <div style={{ flex: "1", marginLeft: "10px" }}>
                                     <h5>Fecha de Nacimiento*</h5>
-                                    <input type="date" id="fecha_nac" name="fechaNac" value={solicitante.fechaNac} onChange={handleChange} ref={SolicRef}  required />
+                                    <input type="date" id="fecha_nac" name="fechaNac" value={solicitante.fechaNac} onChange={handleChange} ref={SolicRef} required />
                                 </div>
                             </div>
                         </div>
@@ -165,7 +159,7 @@ const CrearU = (params) => {
                             <input className="form-control" type="text" name="institucion" placeholder="Institucion" value={solicitante.institucion} onChange={handleChange} ref={SolicRef} required />
                             <br />
                             <h5 >Especialidad</h5>
-                            <input className="form-control" type="text" name="especialidad" placeholder="Especialidad" value={solicitante.especialidad} onChange={handleChange}  ref={SolicRef} required />
+                            <input className="form-control" type="text" name="especialidad" placeholder="Especialidad" value={solicitante.especialidad} onChange={handleChange} ref={SolicRef} required />
                             <br />
                             <h5 >Indice</h5>
                             <input className="form-control" type="number" name="indice" placeholder="Indice" value={solicitante.indice} onChange={handleChange} ref={SolicRef} required />
@@ -190,7 +184,7 @@ const CrearU = (params) => {
                             <br /><br />
                         </div>
                     </div>
-                </div> <br/>
+                </div> <br />
                 <div className=" shadow rounded p-3">
                     <h4>Requistos De Empleo</h4>
                     <h5 >Tipo de contrato</h5>

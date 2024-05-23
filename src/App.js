@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
 import './App.css';
 
 import Home from './components/Home';
@@ -13,135 +14,153 @@ import PuestoT from './components/PuestoT';
 import SoliEmpleo from './components/SoliEmpleo';
 import EmprEmpleo from './components/EmprEmpleo';
 import EditarE from './components/EditarE';
-import { collection, addDoc, getDocs,doc, deleteDoc } from 'firebase/firestore';
+
+import { collection, query, where, getDocs, getDoc, doc, setDoc, deleteDoc } from 'firebase/firestore';
 import { db } from './firebaseConfig';
+import { update } from 'firebase/database';
+
 
 
 function App() {
-  const EmpleoRef = useRef();
-  const ref = collection(db,"Solicitudes");
-const [solicitantes, setSolicitantes] = useState([]);
-const [Empresas, setEmpresas] = useState([]);
-const [Puestos, setPuestos] = useState([]);
-const [Solicitudes, setSolicitudes] = useState([]);
 
-  useEffect(() => {
-    const fetchDataFromFirestore = async () => {
-        try {
-            // Fetch data for Solicitantes
-            const solicitantesQuerySnapshot = await getDocs(collection(db, 'Solicitantes'));
-            const solicitantesData = solicitantesQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-            setSolicitantes(solicitantesData);
-      
-            const empresasQuerySnapshot = await getDocs(collection(db, 'Empresas'));
-            const empresasData = empresasQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-            setEmpresas(empresasData);
-      
-            const puestosQuerySnapshot = await getDocs(collection(db, 'Puestos'));
-            const puestosData = puestosQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-            setPuestos(puestosData);
-      
-            const solicitudesQuerySnapshot = await getDocs(collection(db, 'Solicitudes'));
-            const solicitudesData = solicitudesQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-            setSolicitudes(solicitudesData);
-
-            // Do something with the fetched data
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-    };
-    fetchDataFromFirestore();
-  }, []);
-
-  const addSolicitud = (usua) => {
-    setSolicitudes([...Solicitudes, usua])
+  const addSolicitud = async (usua) => {
+    try {
+      await setDoc(doc(db, 'Solicitudes', `${usua.idEmp}`), usua);
+      console.log('Document successfully written!');
+    } catch (error) {
+      console.error('Error writing document: ', error);
+    }
   }
 
-  const addPuesto = (usua) => {
-    setPuestos([...Puestos, usua])
+  const addPuesto = async (usua) => {
+    try {
+      await setDoc(doc(db, 'Puestos', `${usua.id_puesto}`), usua);
+      console.log('Document successfully written!');
+    } catch (error) {
+      console.error('Error writing document: ', error);
+    }
   }
 
-  const addSolicitante = (usua) => {
-    setSolicitantes([...solicitantes, usua])
+  const addSolicitante = async (usua) => {
+    //setSolicitantes([...solicitantes, usua])
+    try {
+      await setDoc(doc(db, 'Solicitantes', `${usua.dni}`), usua);
+      console.log('Document successfully written!');
+    } catch (error) {
+      console.error('Error writing document: ', error);
+    }
   }
 
-  const buscarSolicitante = (dni) => {
-    return (
-      solicitantes.find(solicitante => solicitante.dni === dni)
-    )
+  const buscarSolicitante = async (dni) => {
+    try {
+      const docRef = doc(db, 'Solicitantes', dni);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        return data
+      } else {
+        return null
+      }
+
+    } catch (error) {
+      console.error('Error fetching document:', error);
+    }
   }
+
   const elimSolicitante = async (id) => {
-    console.log(`Attempting to delete solicitante with ID: ${id}`);
-    try {
-      const solicitanteDocRef = doc(db, "Solicitantes", id);
-      console.log(`Document reference created: ${solicitanteDocRef.path}`);
-      await deleteDoc(solicitanteDocRef);
-      console.log(`Document with ID ${id} deleted from Firestore.`);
-      
-      // Update the state to remove the deleted solicitante
-      setSolicitantes(prevSolicitantes => prevSolicitantes.filter(solicitante => solicitante.id !== id));
-      console.log(`Solicitante con ID ${id} eliminado correctamente.`);
-    } catch (error) {
-      console.error("Error deleting solicitante: ", error);
-    }
-  }
-  /*
-    useEffect(() => {
-      //console.log(solicitantes)
-  }, [solicitantes])
-  */
 
-  const addEmpresa = (empr) => {
-    setEmpresas([...Empresas, empr])
-  }
-
-  const buscarEmpresa = (cif) => {
-    return (
-      Empresas.find(Empresa => Empresa.cif === cif)
-    )
-  }
-  const elimEmpresa = async(id) => {
     try {
-      const empresaDocRef = doc(db, "Empresas", id);
-      await deleteDoc(empresaDocRef);
-      setEmpresas(prevEmpresas => prevEmpresas.filter(empresa => empresa.id !== id));
-      console.log(`Empresa con ID ${id} eliminada correctamente.`);
+      await deleteDoc(doc(db, "Solicitantes", id));
     } catch (error) {
-      console.error("Error deleting empresa: ", error);
+      console.log(error)
     }
   }
 
-  //le pone true para que ya no siga enviando solicitudes
-  const actualizarSolicitud = (dni) => {
-    setSolicitantes((prevSolicitantes) =>
-      prevSolicitantes.map((solicitante) =>
-        solicitante.dni === dni ? { ...solicitante, solicitud: true } : solicitante
-      )
-    );
+  const addEmpresa = async (empr) => {
+    try {
+      await setDoc(doc(db, 'Empresas', `${empr.cif}`), empr);
+      console.log('Document successfully written!');
+    } catch (error) {
+      console.error('Error writing document: ', error);
+    }
+  }
+
+  const buscarEmpresa = async (cif) => {
+    try {
+      const docRef = doc(db, 'Empresas', cif);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        console.log("Exite empresa")
+        const data = docSnap.data();
+        return data
+      } else {
+        console.log("no Exite empresa")
+        return null
+      }
+
+    } catch (error) {
+      console.error('Error fetching document:', error);
+    }
+  }
+
+  const elimEmpresa = async (id) => {
+    try {
+      await deleteDoc(doc(db, "Empresas", id));
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const elimPuestosPorEmpresa = async (id_empresa) => {
+    try {
+      // Crear una referencia a la colección 'Puestos'
+      const puestosRef = collection(db, "Puestos");
+
+      // Crear una consulta para obtener los documentos donde 'id_empresa' sea igual al id proporcionado
+      const q = query(puestosRef, where("id_empresa", "==", id_empresa));
+
+      // Obtener los documentos que coincidan con la consulta
+      const querySnapshot = await getDocs(q);
+
+      // Iterar sobre cada documento y eliminarlo
+      const deletePromises = querySnapshot.docs.map((document) => deleteDoc(doc(db, "Puestos", document.id)));
+
+      // Esperar a que todas las promesas de eliminación se resuelvan
+      await Promise.all(deletePromises);
+
+      console.log(`Se han eliminado los puestos de la empresa con id: ${id_empresa}`);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-
-  useEffect(() => {
-    console.log(Solicitudes)
-  }, [Solicitudes])
+  const actualizarSolicitud = async (dni) => {
+    try {
+      console.log("ban1")
+      await update(doc(db, 'Solicitantes', dni), { solicitud: true })
+      console.log("ban2")
+    } catch (error) {
+      console.log(error)
+      console.log("ban3")
+    }
+  };
 
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
           <Route path='/' element={<NavBarExample />}>
-            <Route index element={<Home empresas={Empresas} solicitudes={Solicitudes} solicitantes={solicitantes} puestos={Puestos} />} />
+            <Route index element={<Home />} />
             <Route path='CrearU' element={<CrearU addSoli={addSolicitante} busSoli={buscarSolicitante} />} />
             <Route path='BuscarU' element={<BuscarU busSoli={buscarSolicitante} elimSoli={elimSolicitante} />} />
             <Route path='EditarU/:idusuario' element={<EditarU addSoli={addSolicitante} busSoli={buscarSolicitante} elimSoli={elimSolicitante} />} />
 
             <Route path='CrearE' element={<CrearE addEmpresa={addEmpresa} busEmpr={buscarEmpresa} />} />
-            <Route path='BuscarE' element={<BuscarE busEmpr={buscarEmpresa} elimEmpr={elimEmpresa} />} />
+            <Route path='BuscarE' element={<BuscarE elimPuestosPorEmpresa={elimPuestosPorEmpresa} busEmpr={buscarEmpresa} elimEmpr={elimEmpresa} />} />
             <Route path='EditarE/:cifEmpr' element={<EditarE addEmpr={addEmpresa} busEmpr={buscarEmpresa} elimEmpr={elimEmpresa} />} />
-            
-            <Route path='EmprEmpleo/:cifEmpresa' element={<EmprEmpleo busEmpr={buscarEmpresa} solicitantes={solicitantes} adsolicitud={addSolicitud} />} />
 
-            <Route path='SoliEmpleo/:idSolici/:nombreSolici' element={<SoliEmpleo actualizarSolicitud={actualizarSolicitud} puestos={Puestos} buscarSolici={buscarSolicitante} adsolicitud={addSolicitud} />} />
+            <Route path='EmprEmpleo/:cifEmpresa' element={<EmprEmpleo busEmpr={buscarEmpresa} adsolicitud={addSolicitud} />} />
+
+            <Route path='SoliEmpleo/:idSolici/:nombreSolici' element={<SoliEmpleo actualizarSolicitud={actualizarSolicitud} buscarSolici={buscarSolicitante} adsolicitud={addSolicitud} />} />
 
             <Route path='PuestoT/:cifEmpresa/:nombreEmpresa' element={<PuestoT addPuesto={addPuesto} />} />
             <Route path='*' element={<Navigate replace to={"/"} />} />

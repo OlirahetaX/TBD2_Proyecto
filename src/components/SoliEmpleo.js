@@ -1,47 +1,62 @@
-import React,{useState,useRef} from "react";
+import React,{useState} from "react";
 import { useParams } from "react-router-dom";
-import { db } from '../firebaseConfig';
-import { addDoc, collection } from "firebase/firestore";
+import { collection, getDocs, } from 'firebase/firestore';
+import { db } from "../firebaseConfig";
+import { useEffect } from 'react';
 
 const SoliEmpleo = (params) => {
-    const SolEmRef = useRef();
-    const ref = collection(db,"Solicitudes");
-    const { puestos, buscarSolici,adsolicitud,actualizarSolicitud } = params
-    const { idSolici, nombreSolici } = useParams()
+
+    const {  buscarSolici,adsolicitud,actualizarSolicitud } = params
+    const { idSolici } = useParams()
+
+    const [puestos,setPuestos] = useState([])
+
+    useEffect(() => {
+        const fetchDataFromFirestore = async () => {
+            try {
+                const puestosQuerySnapshot = await getDocs(collection(db, 'Puestos'));
+                const puestosData = puestosQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                setPuestos(puestosData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchDataFromFirestore();
+    }, []);
+
+
 
     const solicitante = buscarSolici(idSolici)
-// FALTA EL UPDATE CUANDO PARA PONER FALSE EN LA SOLICITUD DEL SOLICITANTE
+
     const [empleo, SetEmpleo] = useState({
         idEmp: "",
         idSolicitante: "",
-        nombreSolicitante: "",
-        nombreEmpr: "",
+        cifempr: "",
         accion: ""
     })
 
-    const saveEmp = (elementoN) => {
+    const saveEmp = async(elementoN) => {
         const empleoE = {
             idEmp: Date.now(),
             idSolicitante: idSolici ,
-            nombreSolicitante: nombreSolici ,
-            nombreEmpr: elementoN,
+            cifempr: elementoN,
             accion: "Solicitante Envio Curriculum"
         }
         SetEmpleo(empleoE)
-        actualizarSolicitud(idSolici)
+        await actualizarSolicitud(idSolici)
         adsolicitud(empleoE)
     }
 
     return (
         <div className="container w-75">
             <div className=" shadow rounded p-3">
-                <h3>({idSolici}) {nombreSolici}</h3>
+                <h3>Solicitante:  {idSolici}</h3>
             </div>
             <br /><br /><br />
             <table className="table">
                 <thead>
                     <tr>
-                        <th scope="col">Empresa</th>
+                        <th scope="col">CIF Empresa</th>
                         <th scope="col">Tipo</th>
                         <th scope="col">Descripcion</th>
                         <th scope="col">Lugar</th>
@@ -52,14 +67,14 @@ const SoliEmpleo = (params) => {
                 <tbody>
                     {puestos.map((elemento, index) => (
                         <tr key={index}>
-                            <td >{elemento.nombre_empresa}</td>
+                            <td >{elemento.id_empresa}</td>
                             <td >{elemento.tipo_puesto}</td>
                             <td >{elemento.descripcion}</td>
                             <td >{elemento.lugar_empleo}</td>
                             <td >{elemento.sueldo}</td>
                             <td >{elemento.tipo_contrato}</td>
                             <td>
-                                <button type="button" class="btn btn-success" data-bs-toggle="modal"  onClick={() => saveEmp(elemento.nombre_empresa)} 
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal"  onClick={() => saveEmp(elemento.id_empresa)} 
                                 data-bs-target="#staticBackdrop" disabled={solicitante.solicitud !== true ? "" : "disabled"}>
                                     Enviar Curriculum
                                 </button>

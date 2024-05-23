@@ -6,7 +6,7 @@ const CollapseSolici = (params) => {
         <>
 
             <button class="list-group-item list-group-item-action" type="button" data-bs-toggle="collapse" data-bs-target={`#collapse-${solicitante.dni}`} aria-expanded="false" aria-controls="collapseExample">
-                ({solicitante.dni}) {solicitante.nombre}
+                {solicitante.dni} {solicitante.nombre}
             </button>
             <div class="collapse" id={`collapse-${solicitante.dni}`}>
                 <div className='container text-start'>

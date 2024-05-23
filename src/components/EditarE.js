@@ -17,26 +17,28 @@ const EditarE = (params) => {
         fecha_creacion: ""
     })
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const sa = await busEmpr(cifEmpr);
+                setEmpresa(sa);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+
     const handleChange = ({ target }) => {
         setEmpresa({ ...empresa, [target.name]: target.value })
     }
 
-    function funcion1() {
-        return new Promise((resolve, reject) => {
-            elimEmpr(cifEmpr)
-            setTimeout(() => {
-                resolve();
-            }, 2000);
-        });
-    }
-
-    const guardarEmpr= (e) => {
+    const guardarEmpr = (e) => {
         e.preventDefault();
-
-        // funcion1().then((result) => {
-        //     addEmpr(empresa);
-        // })
-        console.log(empresa)
+        elimEmpr(cifEmpr)
+        addEmpr(empresa)
         setEmpresa({
             cif: "",
             nombre: "",

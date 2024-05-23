@@ -5,13 +5,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHomeLgAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import "./BuscarU.css";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
 
 
 
 const BuscarE = (params) => {
-    const { busEmpr, elimEmpr } = params
+    const { busEmpr, elimEmpr,elimPuestosPorEmpresa } = params
 
     const [busqueda, setBusqueda] = useState("");
     const [mostrarAlerta, setMostrarAlerta] = useState(false);
@@ -29,20 +29,20 @@ const BuscarE = (params) => {
     };
 
     const eliminar = () => {
-        if (Empresa) {
-            elimEmpr(Empresa.id); 
-            setMostrarAlertaElim(true);
-            setMostrarTabla(false);
-          }
+        elimPuestosPorEmpresa(Empresa.cif)
+        elimEmpr(Empresa.cif);
+        setMostrarAlertaElim(true);
+        setMostrarTabla(false);
     };
 
-    const handleButtonClick = () => {
-        const encontrado = busEmpr(busqueda)
-        if (encontrado) {
+    const handleButtonClick = async () => {
+        const encontrado = await busEmpr(busqueda)
+        if (encontrado != null) {
+            setEmpresa(encontrado)
             setMostrarTabla(true);
             setMostrarAlertaElim(false);
             setMostrarAlerta(false);
-            setEmpresa(encontrado)
+
         } else {
             setMostrarTabla(false);
             setMostrarAlerta(true);

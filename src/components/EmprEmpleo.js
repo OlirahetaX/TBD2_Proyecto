@@ -1,20 +1,40 @@
 import React, { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import CollapseSolici from './collapseSolici/CollapseSolici'
+import { collection, getDocs, } from 'firebase/firestore';
+import { db } from "../firebaseConfig";
+import { useEffect } from 'react';
 
 const EmprEmpleo = (params) => {
     const { cifEmpresa } = useParams()
-    const { busEmpr, solicitantes, adsolicitud } = params
+    const { busEmpr, adsolicitud } = params
+    const [solicitantes, setSolicitantes] = useState([])
+    const [Empresa, setEmpresa] = useState("")
 
-    const Empresa = busEmpr(cifEmpresa)
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const sa = await busEmpr(cifEmpresa);
+                setEmpresa(sa);
+
+                const solicitantesQuerySnapshot = await getDocs(collection(db, 'Solicitantes'));
+                const solicitantesData = solicitantesQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                setSolicitantes(solicitantesData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
+
 
     const [disabledButtons, setDisabledButtons] = useState({});
 
     const [empleo, SetEmpleo] = useState({
         idEmp: "",
         idSolicitante: "",
-        nombreSolicitante: "",
-        nombreEmpr: "",
+        cifempr: "",
         accion: ""
     })
 
@@ -22,8 +42,7 @@ const EmprEmpleo = (params) => {
         const empl = {
             idEmp: Date.now(),
             idSolicitante: elemento.dni,
-            nombreSolicitante: elemento.nombre,
-            nombreEmpr: Empresa.nombre,
+            cifempr: cifEmpresa,
             accion: "Empresa Envio Solicitud De Empleo "
         }
         SetEmpleo(empl)
@@ -36,6 +55,7 @@ const EmprEmpleo = (params) => {
 
 
     return (
+
         <div className='container'>
             <div className='container w-50 shadow rounded p-3' >
                 <h3>({Empresa.cif}) {Empresa.nombre}</h3>

@@ -1,10 +1,45 @@
 import CollapseEmpr from "./collapseEmpr/CollapseEmpr"
 import CollapsePuesto from "./collapsePuesto/CollapsePuesto"
 import CollapseSolici from "./collapseSolici/CollapseSolici"
+import { useState,useEffect } from "react";
 
-const Home = (params) => {
+import { collection, getDocs, } from 'firebase/firestore';
+import { db } from "../firebaseConfig";
 
-    const { solicitantes, empresas, puestos, solicitudes } = params
+const Home = () => {
+    const [solicitantes, setSolicitantes] = useState([]);
+    const [Empresas, setEmpresas] = useState([]);
+    const [Puestos, setPuestos] = useState([]);
+    const [Solicitudes, setSolicitudes] = useState([]);
+
+    useEffect(() => {
+        const fetchDataFromFirestore = async () => {
+            try {
+                // Fetch data for Solicitantes
+                const solicitantesQuerySnapshot = await getDocs(collection(db, 'Solicitantes'));
+                const solicitantesData = solicitantesQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                setSolicitantes(solicitantesData);
+
+                const empresasQuerySnapshot = await getDocs(collection(db, 'Empresas'));
+                const empresasData = empresasQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                setEmpresas(empresasData);
+
+                const puestosQuerySnapshot = await getDocs(collection(db, 'Puestos'));
+                const puestosData = puestosQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                setPuestos(puestosData);
+
+                const solicitudesQuerySnapshot = await getDocs(collection(db, 'Solicitudes'));
+                const solicitudesData = solicitudesQuerySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+                setSolicitudes(solicitudesData);
+
+                // Do something with the fetched data
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        fetchDataFromFirestore();
+    }, []);
+
     return (
 
         <div>
@@ -39,7 +74,7 @@ const Home = (params) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {empresas.map((elemento, index) => (
+                            {Empresas.map((elemento, index) => (
                                 <tr key={index}>
                                     <td ><CollapseEmpr empresa={elemento} /></td>
                                 </tr>
@@ -58,7 +93,7 @@ const Home = (params) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {puestos.map((elemento, index) => (
+                            {Puestos.map((elemento, index) => (
                                 <tr key={index}>
                                     <td ><CollapsePuesto puesto={elemento} /></td>
                                 </tr>
@@ -74,19 +109,17 @@ const Home = (params) => {
                         <thead>
                             <tr>
                                 <th>Id Solicitud</th>
-                                <th>DNI solicitante</th>
-                                <th>Solicitante</th>
-                                <th >Empresa</th>
+                                <th>DNI Solicitante</th>
+                                <th>CIF Empresa</th>
                                 <th >Accion</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {solicitudes.map((elemento, index) => (
+                            {Solicitudes.map((elemento, index) => (
                                 <tr key={index}>
                                     <td>{elemento.idEmp}</td>
                                     <td >{elemento.idSolicitante}</td>
-                                    <td >{elemento.nombreSolicitante}</td>
-                                    <td >{elemento.nombreEmpr}</td>
+                                    <td >{elemento.cifempr}</td>
                                     <td >{elemento.accion}</td>
                                 </tr>
                             ))}

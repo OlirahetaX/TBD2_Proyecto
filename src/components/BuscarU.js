@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHomeLgAlt, faSearch } from '@fortawesome/free-solid-svg-icons';
 import { useState } from 'react';
 import "./BuscarU.css";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "react-bootstrap";
 
 
@@ -20,7 +20,8 @@ const BuscarU = (params) => {
     const [usuario, setUsuario] = useState({
         dni: "",
         nombre: "",
-        apellido: ""
+        apellido: "",
+        celular: ""
     })
 
     const handleChange = (event) => {
@@ -28,25 +29,32 @@ const BuscarU = (params) => {
     };
 
     const eliminar = () => {
-        if (usuario) {
-            elimSoli(usuario.id);
-            setMostrarAlertaElim(true);
-            setMostrarTabla(false);
-        }
+        elimSoli(usuario.dni);
+        setMostrarAlertaElim(true);
+        setMostrarTabla(false);
     };
+    //cambiar de arreglo a base de datos
+    const handleButtonClick = async () => {
+        const encontrado = await busSoli(busqueda)
+        if (encontrado != null) {
+            console.log('Encontrado:', encontrado);
 
-    const handleButtonClick = () => {
-        const encontrado = busSoli(busqueda)
-        if (encontrado) {
-            setMostrarTabla(true);
+            const usu = {
+                dni: encontrado.dni,
+                nombre: encontrado.nombre,
+                apellido: encontrado.apellido,
+                celular: encontrado.celular,
+            }
+            setUsuario(usu)
             setMostrarAlertaElim(false);
             setMostrarAlerta(false);
-            setUsuario(encontrado)
+            setMostrarTabla(true);
         } else {
             setMostrarTabla(false);
             setMostrarAlerta(true);
             setMostrarAlertaElim(false);
         }
+
     };
 
     return (

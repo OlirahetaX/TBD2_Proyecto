@@ -5,7 +5,8 @@ import { useParams } from 'react-router-dom';
 const EditarU = (params) => {
     const { addSoli, busSoli, elimSoli } = params
     const { idusuario } = useParams()
-
+    const [tituloA, setTituloA] = useState("Solicitante Editado!")
+    const [alerta, setAlerta] = useState(false)
     const [solicitante, setSolicitante] = useState({
         dni: '',
         nombre: "",
@@ -35,22 +36,23 @@ const EditarU = (params) => {
         setSolicitante({ ...solicitante, [target.name]: target.value })
     }
 
-    function funcion1() {
-        return new Promise((resolve, reject) => {
-            elimSoli(idusuario)
-            setTimeout(() => {
-                resolve();
-            }, 2000);
-        });
-    }
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const sa = await busSoli(idusuario);
+                setSolicitante(sa);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     const guardarSolici = (e) => {
         e.preventDefault();
-
-        funcion1().then((result) => {
-            addSoli(solicitante);
-        })
-        console.log(solicitante)
+        elimSoli(idusuario)
+        addSoli(solicitante)
         setSolicitante({
             dni: '',
             nombre: "",
@@ -75,6 +77,8 @@ const EditarU = (params) => {
             salario: "",
             contrato: ""
         })
+        setAlerta(true)
+
     }
 
     useEffect(() => {
@@ -208,7 +212,13 @@ const EditarU = (params) => {
                 </div>
                 <br /><br />
                 <input className="btn btn-primary shadow" type="submit" value="Guardar" style={{ paddingRight: "200px", paddingLeft: "200px" }} />
-
+                {
+                    alerta &&
+                    <div className="alert alert-success alert-dismissible fade show" role="alert">
+                        <strong>{tituloA}</strong>
+                        <button type="button" className="btn-close" onClick={() => setAlerta(false)} aria-label="Close"></button>
+                    </div>
+                }
             </form>
 
         </div>
